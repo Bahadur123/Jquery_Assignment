@@ -1,0 +1,115 @@
+
+<html>
+<head>
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<title>jqueryassignment</title>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<style>
+<style>
+
+body {
+ font: 10px sans-serif;
+ background-color: skyblue;
+}
+h1{
+  text-align: center;
+  color:green;
+}
+.axis path,
+.axis line {
+ fill: none;
+ stroke: #000;
+}
+
+.line {
+ fill: none;
+ stroke-width: 3px;
+}
+</style>
+</head>
+<body>
+
+  <div class="container-fluid">
+    <div class="col-lg-4" id = "table">
+​
+    </div>
+    <div class="col-lg-8" id = "json1">
+    </div>
+  </div>
+
+
+  <div class="container">
+    <div class="cols-lg-12">
+      <form>
+        <div class="form-group">
+          <input type="number" class="form-control" name="year" id="year" placeholder="Year" required = "required">
+        </div>
+        <div class="form-group">
+          <input type="number" class="form-control" name="Arrested" id="Arrested" placeholder="Arrested" required = "required">
+        </div>
+        <div class="form-group">
+          <input type="number" class="form-control" name="NotArrested" id="NotArrested" placeholder="NotArrested" required = "required">
+        </div>
+        <div class="form-group">
+          <button class="btn btn-warning btn-lg btn-block" type = "submit" value = 'submit' id='submit'>add</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+
+  <script>
+  var a=[];
+  $.getJSON('result_multiserieslinechart.json',function(data){
+    a = data;
+    var result =  '<table class = "table table-striped">';
+    result+='<tr><th>year</th><th>Arrested</th><th>NotArrested</th></tr>';
+    for(var i=0;i<a.length;i++){
+      result+="<tr><td>"+a[i].year+"</td><td>"+a[i].Arrested+"</td><td>"+a[i].NotArrested+"</td><td><button class='btn btn-primary' >delete</button></td></tr>";
+    }
+    result += "</table>";
+    $(result).appendTo('#table');
+  }).promise(a);
+
+  a.done(function(){
+      $('#submit').on('click',function(e){
+        e.preventDefault();
+      var year=$('form').find('#year').val();
+      var Arrested=$('form').find('#Arrested').val();
+      var NotArrested=$('form').find('#NotArrested').val();
+      if(year==''||Arrested==''||NotArrested==''){
+        alert("please enter the details")
+      }
+      else{
+        var o = {year:year,Arrested:Arrested,NotArrested:NotArrested};
+        a.push(o);
+          $('table tbody').append('<tr><td>'+year+'</td><td>'+Arrested+'</td><td>'+NotArrested+ '</td><td><button class="btn btn-primary" >delete</button></td></tr>');
+          $('#json1').empty();
+          $.getScript('script2.js',function(){
+            graph1(a);
+          });
+      }
+      })
+      $('#table').on('click','.btn-primary',function(){
+      var j = $(this).closest('tr').index();
+      a.splice(j-4,1);
+      $(this).closest('tr').remove();
+      $('#json1').empty();
+      $.getScript('script2.js',function(){
+      graph1(a);
+      })
+      })
+
+      })
+      $.getScript('script2.js',function(){
+      graph1(a);
+      })
+
+
+  </script>
+</body>
+</html>

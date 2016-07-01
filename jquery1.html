@@ -1,0 +1,97 @@
+<html>
+<head>
+
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<title>
+  Jquery Assegnment
+</title>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<style>
+#table{
+  text-align: center;
+}
+</style>
+
+</head>
+
+<body>
+
+  <div class="container-fluid">
+    <div class="col-lg-4" id = "table">
+​
+    </div>
+    <div class="col-lg-6" id = "json">
+    </div>
+  </div>
+  <!--adding operation-->
+  <div class="container">
+    <div class="cols-lg-12">
+      <form>
+        <div class="form-group">
+          <input type="text" class="form-control" name="abc" id="year" >
+        </div>
+        <div class="form-group">
+          <input type="text" class="form-control" name="abc" id="above" >
+        </div>
+        <div class="form-group">
+          <input type="text" class="form-control" name="abc" id="below_and_under">
+        </div>
+        <div class="form-group">
+          <button class="btn btn-primary btn-lg btn-block" type = "submit" value = 'submit' id='submit'>add</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <script>
+
+  var a=[];
+  $.getJSON('result_stackedbarchart.json',function(data){
+    a = data;
+    var result =  '<table class = "table table-striped">';
+    result+='<tr><th>$year$</th><th>$above_500$</th><th>$below_and_under_500$</th></tr>';
+    for(var i=0;i<a.length;i++){
+      result+="<tr><td>"+a[i].year+"</td><td>"+a[i].above+"</td><td>"+a[i].below_and_under+"</td><td><button class='btn btn-success' >delete</button></td></tr>";
+    }
+    result += "</table>";
+    $(result).appendTo('#table');
+  }).promise(a);
+
+a.done(function(){
+    $('#submit').on('click',function(e){
+      e.preventDefault();
+    var year=$('form').find('#year').val();
+    var above=$('form').find('#above').val();
+    var below_and_under=$('form').find('#below_and_under').val();
+    if(year==''||above==''||below_and_under==''){
+      alert("please enter the details")
+    }
+    else{
+      var o = {year:year,above:above,below_and_under:below_and_under};
+      a.push(o);
+        $('table tbody').append('<tr><td>'+year+'</td><td>'+above+'</td><td>'+below_and_under+ '</td><td><button class="btn btn-success" >delete</button></td></tr>');
+        $('#json').empty();
+        $.getScript('script1.js',function(){
+          graph(a);
+        })
+  }
+})
+$('#table').on('click','.btn-success',function(){
+  var j = $(this).closest('tr').index();
+  a.splice(j-1,1);
+  $(this).closest('tr').remove();
+  $('#json').empty();
+  $.getScript('script1.js',function(){
+    graph(a);
+    })
+})
+$.getScript('script1.js',function(){
+  graph(a);
+  })
+})
+  </script>
+</body>
+</html>
